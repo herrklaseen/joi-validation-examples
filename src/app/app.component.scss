@@ -1,0 +1,42 @@
+:host {
+  font-family: sans-serif;
+  font-size: 16px;
+}
+input, select {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+input[type="text"] {
+  padding: 0.25rem;
+}
+
+input.ng-dirty.ng-invalid {
+    outline: red auto 1px;
+}
+
+.errorText {
+  color: maroon;
+  font-size: 0.75rem;
+  margin-top: -0.5rem;
+}
+
+.wrapper {
+  margin: 0 auto;
+  width: 25vw;
+  @media screen and (max-width: 1024px) {
+    width: 50vw;
+  }
+}
+
+button {
+  display: block;
+  margin: 0 auto;
+  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+  background-color: green;
+  color: white;
+  border: 0;
+}
