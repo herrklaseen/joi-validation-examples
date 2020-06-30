@@ -12,10 +12,20 @@ export class AppComponent {
   types = ['Lethal', 'Major', 'Minor'];
 
   incidentSchema = Joi.object({
-    type: Joi.any().valid('Lethal', 'Major', 'Minor'),
+    type: Joi.any()
+    // Add conditional validation:
+    .when('siteId',
+      {
+        is: 'AB123',
+        then: Joi.valid('Major'),
+        otherwise: Joi.valid('Lethal', 'Major', 'Minor')
+      }
+    ),
     title: Joi.string().required().min(5).max(32),
     description: Joi.string().required().min(20),
-    siteId: Joi.string().pattern(/^[a-zA-Z]{2}[0-9]{1,3}$/)
+    // Add a human friendly message to display if
+    // the Site ID does not pass validation
+    siteId: Joi.string().pattern(/^[a-zA-Z]{2}[0-9]{1,3}$/).message('Site ID must contain two letters and one to three digits. Example "AB123"')
   });
 
   incidentForm = this.fb.group({
@@ -23,7 +33,7 @@ export class AppComponent {
     title: [''],
     description: [''],
     siteId: ['']
-  }, { 
+  }, {
     // Adding a validator to the whole form.
     validators: this.createValidatorFromSchema(this.incidentSchema)
   });
@@ -52,7 +62,7 @@ export class AppComponent {
         }
 
         // Return the error object so that we can access
-        // the form’s errors via `form.errors`. 
+        // the form’s errors via `form.errors`.
         return errorObj;
       } else {
         return null;
@@ -62,9 +72,17 @@ export class AppComponent {
     return validator;
   }
 
-  getError(formControlName: string): string {
+  getError(formControlName: string, options = { checkPristine: false } ): string {
+    let preflight;
+
+    if (options.checkPristine) {
+      preflight = true;
+    } else {
+      preflight = !this.incidentForm.get(formControlName).pristine
+    }
+
     if (
-      !this.incidentForm.get(formControlName).pristine &&
+      preflight &&
       this.incidentForm.errors
     ) {
         return this.incidentForm.errors[formControlName];

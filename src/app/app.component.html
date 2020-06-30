@@ -8,6 +8,9 @@
         <option *ngFor="let option of types" [ngValue]="option">{{ option }} </option>
       </select>
     </label>
+    <p *ngIf="getError('type', { checkPristine: true } ) as error" class="errorText">
+        {{ error }}
+    </p>
 
     <label>Title
       <input type="text" formControlName="title"/>
