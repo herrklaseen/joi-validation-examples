@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormGroup, FormBuilder, ValidatorFn } from '@angular/forms';
+import { FormGroup, FormBuilder, FormArray, ValidatorFn } from '@angular/forms';
 import * as Joi from '@hapi/joi';
 
 @Component({
@@ -23,20 +23,30 @@ export class AppComponent {
     ),
     title: Joi.string().required().min(5).max(32),
     description: Joi.string().required().min(20),
-    // Add a human friendly message to display if
-    // the Site ID does not pass validation
-    siteId: Joi.string().pattern(/^[a-zA-Z]{2}[0-9]{1,3}$/).message('Site ID must contain two letters and one to three digits. Example "AB123"')
+    siteId: Joi.string().pattern(/^[a-zA-Z]{2}[0-9]{1,3}$/).message('Site ID must contain two letters and one to three digits. Example "AB123"'),
+
+    // Add an array of affected persons. The the person's
+    // name cannot be too short or too long
+    affected: Joi.array().items(Joi.string().min(3).max(24)).messages({
+      'string.min': 'This field needs to contain at least {#limit} characters',
+      'string.max': 'This field can contain no more than {#limit} characters'
+    })
   });
 
   incidentForm = this.fb.group({
     type: [this.types[2]],
-    title: [''],
-    description: [''],
-    siteId: ['']
+    title: ['Something went wrong'],
+    description: ['Here is what happened in great detail'],
+    siteId: ['UX123'],
+    // add an array to the form
+    affected: this.fb.array([])
   }, {
-    // Adding a validator to the whole form.
     validators: this.createValidatorFromSchema(this.incidentSchema)
   });
+
+  get affected(): FormArray {
+    return this.incidentForm.get('affected') as FormArray;
+  }
 
   constructor(private fb: FormBuilder) {}
 
@@ -47,6 +57,7 @@ export class AppComponent {
       const result = schema.validate(group.value);
 
       if (result.error) {
+        console.log(result.error);
         const errorObj = result.error.details.reduce((acc, current) => {
           const key = current.path.join('.');
           acc[key] = current.message;
@@ -65,8 +76,13 @@ export class AppComponent {
         // the form’s errors via `form.errors`.
         return errorObj;
       } else {
+        for (const key in group.controls) {
+          console.log(key, group.get(key).errors);
+        }
+
         return null;
       }
+
     };
 
     return validator;
@@ -89,4 +105,9 @@ export class AppComponent {
     }
     return;
   }
+
+  onAddAffectedClick(): void {
+    this.affected.push(this.fb.control(''));
+  }
+
 }

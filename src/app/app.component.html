@@ -36,6 +36,24 @@
         {{ error }}
     </p>
 
+    <!-- Add a section to contain the dynamic part of the form -->
+    <section formArrayName="affected">
+    <div *ngFor="let person of affected.controls; let i=index">
+        <label>Affected person #{{i + 1}}
+            <input type="text" [formControlName]="i"/>
+        </label>
+        <p *ngIf="getError('affected.' + i) as error" class="errorText">
+            {{ error }}
+        </p>
+    </div>
+    <!-- This section also contains the button to add fields. You can't
+    remove affected persons at this point. -->
+    <button type="button" (click)="onAddAffectedClick()">Add affected persons</button>
+    </section>
+
+    <!-- Hey its a hr tag! -->
+    <hr />
+
     <button type="submit" [disabled]="!incidentForm.valid">Send report</button>
   </form>
 </div>
