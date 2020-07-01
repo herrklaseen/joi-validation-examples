@@ -52,12 +52,19 @@ export class AppComponent {
 
   private createValidatorFromSchema(schema): ValidatorFn {
     const validator: ValidatorFn = (group: FormGroup) => {
+      // Remove error from controls
+      for (const key in group.controls) {
+        const control = group.get(key);
+        if (control.errors) {
+          control.setErrors(null);
+        }
+      }
+
       // This is where the validation on the values of
       // the form group is run.
       const result = schema.validate(group.value);
 
       if (result.error) {
-        console.log(result.error);
         const errorObj = result.error.details.reduce((acc, current) => {
           const key = current.path.join('.');
           acc[key] = current.message;
@@ -76,13 +83,8 @@ export class AppComponent {
         // the form’s errors via `form.errors`.
         return errorObj;
       } else {
-        for (const key in group.controls) {
-          console.log(key, group.get(key).errors);
-        }
-
         return null;
       }
-
     };
 
     return validator;
