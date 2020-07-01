@@ -1,6 +1,6 @@
 # JoiValidation
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.1.
+This repository contains the code for an article on form validation I wrote. Feel free to use it any way you like. 
 
 ## Development server
 
