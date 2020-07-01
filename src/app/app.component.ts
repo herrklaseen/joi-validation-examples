@@ -30,9 +30,9 @@ export class AppComponent {
 
   incidentForm = this.fb.group({
     type: [this.types[2]],
-    title: [''],
-    description: [''],
-    siteId: ['']
+    title: ['A problem occurred'],
+    description: ['A longer description of the problem'],
+    siteId: ['AB122']
   }, {
     // Adding a validator to the whole form.
     validators: this.createValidatorFromSchema(this.incidentSchema)
@@ -42,6 +42,14 @@ export class AppComponent {
 
   private createValidatorFromSchema(schema): ValidatorFn {
     const validator: ValidatorFn = (group: FormGroup) => {
+      // Remove error from controls
+      for (const key in group.controls) {
+        const control = group.get(key);
+        if (control.errors) {
+          control.setErrors(null);
+        }
+      }
+
       // This is where the validation on the values of
       // the form group is run.
       const result = schema.validate(group.value);
